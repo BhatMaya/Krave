@@ -3,7 +3,10 @@
 
 
 class House: 
-	pass # tells python to skip over the contents of the class for now 
+	
+	def open_window(self, windows):
+		print('Opening the windows')
+		self.windows = 7
 
 # creating an instance
 house1 = House()
@@ -15,3 +18,6 @@ house1.floors = 2
 print(house1.doors)
 print(house1.windows)
 print(house1.floors)
+
+house1.open_window(7)
+print(house1.windows)
