@@ -1,23 +1,14 @@
-# Python Intermediate Object Oriented Programming #1 - Classes
+# Python Intermediate Object Oriented Programming #2 - Attributes
 # Think of classes as an instance/blueprint for an actual object that will be created using the class
 
 
 class House: 
 	
-	def open_window(self, windows):
-		print('Opening the windows')
-		self.windows = 7
+	#the init() method is called as soon as the instance is created- meaning that we don't have to call it- python will call it for us
+	def __init__(self, doors, windows, floors): 
+		self.doors = doors
+		self.windows = windows
+		self.floors = floors
 
-# creating an instance
-house1 = House()
-
-house1.doors = 2
-house1.windows = 4 
-house1.floors = 2
-
-print(house1.doors)
-print(house1.windows)
-print(house1.floors)
-
-house1.open_window(7)
-print(house1.windows)
+house1 = House(2, 6, 3)
+print(house1.doors, house1.windows, house1.floors)
