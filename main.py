@@ -92,34 +92,65 @@ else:
 #### factors we are sorting AFTER we get the data: price range, deliverable?, rating, distance FROM current location (need to do this via comparing the two lat/long pairs) 
 
 # need to make sure this list is sorted by value in descending order 
+# temp_list = {
+#     'mexican': 0,
+#     'tacos': 0,
+#     'latin': 0,
+#     'indian': 0,
+#     'vietnamese': 1,
+#     'chinese': 2, 
+#     'sandwich': 0, 
+#     'deli': 0, 
+#     'soup': 0, 
+#     'sushi': 0,  
+#     'italian': 0, 
+#     'pizza': 0, 
+#     'burgers': 0, 
+#     'thai': 2, 
+#     'noodles': 0,
+#     'ramen': 0,
+#     'japanese': 1,
+#     'curry': 0,
+#     'pho': 0,
+#     'salad': 0,
+#     'sit down': 0,
+#     'fast food': 0, 
+#     'dim sum': 1,
+#     'byo': 0, #translate to many separate yelp lookups: byo bowl, salad, chipotle, sandwich, sub, mod
+#     'fries': 0,
+#     'rice': 0
+# } 
+
 temp_list = {
-    'mexican': 3,
-    'tacos': 2,
-    'latin': 1,
-    'indian': 0,
-    'vietnamese': 0,
-    'chinese': 0, 
-    'sandwich': 0, 
-    'deli': 0, 
-    'soup': 0, 
-    'sushi': 0,  
-    'italian': 0, 
-    'pizza': 0, 
-    'burgers': 0, 
-    'thai': 0, 
-    'noodles': 0,
-    'ramen': 0,
-    'japanese': 0,
-    'curry': 0,
-    'pho': 0,
-    'salad': 0,
-    'sit down': 0,
-    'fast food': 0, 
-    'dim sum': 0,
-    'byo': 0, #translate to many separate yelp lookups: byo bowl, salad, chipotle, sandwich, sub, mod
-    'fries': 0,
-    'rice': 3
-} 
+    'mexican': {'weight': 0, 'related_terms': ['casita', 'la ', 'tacos', 'el ']},
+    'tacos': {'weight': 0, 'related_terms': []},
+    'latin': {'weight': 0, 'related_terms': []},
+    'indian': {'weight': 0, 'related_terms': ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala']},
+    'vietnamese': {'weight': 1, 'related_terms': ['pho', 'viet', 'dan', 'saigon']},
+    'chinese': {'weight': 2, 'related_terms': ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai']}, 
+    'sandwich': {'weight': 0, 'related_terms': ['sub', 'deli']}, 
+    'deli': {'weight': 0, 'related_terms': []}, 
+    'soup': {'weight': 0, 'related_terms': []}, 
+    'sushi': {'weight': 0, 'related_terms': ['kura', 'revolving', 'nori']},  
+    'italian': {'weight': 0, 'related_terms': ['pizzeria', 'luigi', 'italiano', 'traditional']}, 
+    'pizza': {'weight': 0, 'related_terms': ['stone', 'pagliacci', 'domino', 'papa', 'mod']}, 
+    'burgers': {'weight': 0, 'related_terms': ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry']}, 
+    'thai': {'weight': 2, 'related_terms': ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle']}, 
+    'noodles': {'weight': 0, 'related_terms': []},
+    'ramen': {'weight': 0, 'related_terms': ['izayaka', 'noodle']},
+    'japanese': {'weight': 1, 'related_terms': ['izayaka', 'sushi', 'ramen']},
+    'curry': {'weight': 0, 'related_terms': []},
+    'pho': {'weight': 0, 'related_terms': ['pho']},
+    'salad': {'weight': 0, 'related_terms': ['green', 'wild']},
+    'sit down': {'weight': 0, 'related_terms': ['house', 'tavern']},
+    'fast food': {'weight': 0, 'related_terms': []}, 
+    'dim sum': {'weight': 1, 'related_terms': ['dim sum', 'dumpling', 'dumpling house']},
+    'byo': {'weight': 0, 'related_terms': ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod']},
+    'fries': {'weight': 0, 'related_terms': []},
+    'rice': {'weight': 0, 'related_terms': []},
+    'asian': {'weight': 0, 'related_terms': ['teriyaki']},
+    'korean': {'weight': 0, 'related_terms': ['bbq', 'barbeque', 'authentic']} 
+}
 
 restaurant_options = {}
 
@@ -129,8 +160,13 @@ maxPrice = priceRange[-1]
 
 # !!!! I THINK THE WAY WE ARE DOING IT HERE IS NOT AS SPECIFIC TO CUISINE - need to really drastically change the value based on the cuisine here 
 #first population of the possible list(the broadest version, we will narrow down from here after this)
+additionalPosSearchTerms = {}
+additionalNegSearchTerms = {}
+
 for key, value in temp_list.items():
-    if (value != 0):
+    if (value['weight'] != 0):
+        if (len(value['related_terms']) != 0):
+            additionalPosSearchTerms[key] = value['related_terms']
         # now we search yelp
         params['term'] = key
         print(params) # testing 
@@ -153,15 +189,20 @@ for key, value in temp_list.items():
                 )
                 if restaurant in restaurant_options:
                     # Add the value to the existing value
-                    restaurant_options[restaurant] *= value
+                    restaurant_options[restaurant] *= value['weight']
                 else:
                     # Add the restaurant to the dictionary with the value
-                    restaurant_options[restaurant] = value
+                    restaurant_options[restaurant] = value['weight']
         else:
             print(response.status_code)
+    else:
+        if (len(value['related_terms']) != 0):
+            additionalNegSearchTerms[key] = value['related_terms']
 
 
 print(restaurant_options) # idk what format this is going to print in 
+print('pos: ', additionalPosSearchTerms)
+print('neg: ', additionalNegSearchTerms)
 
 # next: go through restaurant_options and change the score for each restaurant depending on the other factors: 
     # Factors: price range, distance (need a separate function to calculate this), ratings/stars 
