@@ -1,4 +1,4 @@
-from main import Restaurant, restaurant_options
+from main import Restaurant, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms
 
 needDelivery = False 
 priceRange = ['$','$$']
@@ -85,6 +85,23 @@ for key, value in secondrestaurantoptions.items():
                 else: 
                     value = value - 2.5  # Further decrease if the rating is below 3
                     final_restaurant_list[key] = value
+    
+    # now time to go through additional search terms POSITIVE: 
+    for cuisine, relatedTerms in additionalPosSearchTerms.items():
+        for term in relatedTerms:
+            if term.upper() in key.name.upper():
+                value = value + 0.5
+                print('good term given weight')
+                final_restaurant_list[key] = value
+
+    # now time for negative:
+    for cuisine, relatedTerms in additionalNegSearchTerms.items():
+        for term in relatedTerms:
+            if term.upper() in key.name.upper():
+                value = value - 3
+                print('wrong term filtered out')
+                final_restaurant_list[key] = value
+
 
 
 for (key, value) in final_restaurant_list.items(): 
@@ -107,15 +124,20 @@ sorted_final_restaurant_list = {k: v for k, v in sorted(final_restaurant_list.it
 # print(final_restaurant_list)
 # print(secondary_options) 
 
-print('Final Restaurant List: ')
+
+print('Full List: ')
 for key, value in sorted_final_restaurant_list.items():
     print(key.name, ': ', value)
-
+    
+print('TOP 5: ')
 for i, (key, value) in enumerate(sorted_final_restaurant_list.items()):
     if i < 5:  # Print only the first 5 items
         print(key.name, ': ', value)
     else:
         break
+
+print('')
+
 
 
     
