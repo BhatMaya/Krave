@@ -28,7 +28,7 @@ import requests
 
 ###############################################
 class Restaurant:
-    def __init__(self, name, address, price, rating, latitude, longitude, is_closed, distance):
+    def __init__(self, name, address, price, rating, latitude, longitude, is_closed, distance, delivers):
         self.name = name
         self.address = address
         self.price = price
@@ -37,6 +37,7 @@ class Restaurant:
         self.longitude = longitude
         self.is_closed = is_closed
         self.distance = distance
+        self.delivers = delivers
 
 
     def __repr__(self):
@@ -52,8 +53,7 @@ class Restaurant:
 
 
 api_url = 'https://api.yelp.com/v3/businesses/search'
-api_key = 'TEDWqCrmKb_w37qkJjS426xfoUGpBF1EQBdjxcJtKeXHgJEvAmCW4zFKrHFDvuUGN_ELrNQgEOzaK9taFY-DwvpjiPx1d7xtM5cZ3vnXA2gfEeCgAsAa32_cZY1rZnYx'
-
+api_key = '87qjzUYSUt1gI7_aZKUsEtOkafLQirJaXPiSdMVdNKJYS7f0HvaasYRJtx10VCjaPhAS4DxZVmC2VSUVjKfMUaZ9gw47usy_hOsQ15lJH4G5m24PfiRj-7ydD7K7ZnYx'
 HEADERS = {'Authorization': f'Bearer {api_key}'}
 
 
@@ -62,13 +62,13 @@ longitude = -122.31540319155656
 
 
 params = {
-	'term': 'tacos',
-	'latitude': latitude,
+'term': 'tacos',
+'latitude': latitude,
     'longitude': longitude,
     'radius': 800,  # Radius in meters (5 miles)
     'limit': 20  # Number of results to return (maximum is 50)
 }
-    
+   
 # Make a request to the Yelp API
 response = requests.get(api_url, headers=HEADERS, params=params)
 
@@ -76,89 +76,55 @@ response = requests.get(api_url, headers=HEADERS, params=params)
 if response.status_code == 200:
     data = response.json()
     for business in data.get('businesses', []):
-    	if business.get('price') == "$": 
-    		print(business['name'], business['location']['address1'])
-    	if business.get('price') == "$$": 
-    		print(business['name'], business['location']['address1'])
-    	
-    	
-        
+        if business.get('price') == "$":
+            print(business['name'], business['location']['address1'])
+        if business.get('price') == "$$":
+            print(business['name'], business['location']['address1'])
+   
+   
+       
 else:
     print(f'Error: {response.status_code}')
 
 
-#### first attempt at algorithm: 
-#### factors we are taking BEFORE we make the request: cuisine preference, vegan / vegetarian, healthy, distance 
-#### factors we are sorting AFTER we get the data: price range, deliverable?, rating, distance FROM current location (need to do this via comparing the two lat/long pairs) 
-
-# need to make sure this list is sorted by value in descending order 
-# temp_list = {
-#     'mexican': 0,
-#     'tacos': 0,
-#     'latin': 0,
-#     'indian': 0,
-#     'vietnamese': 1,
-#     'chinese': 2, 
-#     'sandwich': 0, 
-#     'deli': 0, 
-#     'soup': 0, 
-#     'sushi': 0,  
-#     'italian': 0, 
-#     'pizza': 0, 
-#     'burgers': 0, 
-#     'thai': 2, 
-#     'noodles': 0,
-#     'ramen': 0,
-#     'japanese': 1,
-#     'curry': 0,
-#     'pho': 0,
-#     'salad': 0,
-#     'sit down': 0,
-#     'fast food': 0, 
-#     'dim sum': 1,
-#     'byo': 0, #translate to many separate yelp lookups: byo bowl, salad, chipotle, sandwich, sub, mod
-#     'fries': 0,
-#     'rice': 0
-# } 
-
 temp_list = {
-    'mexican': {'weight': 0, 'related_terms': ['casita', 'la ', 'tacos', 'el ']},
-    'tacos': {'weight': 0, 'related_terms': []},
+    'mexican': {'weight': 3, 'related_terms': ['casita', 'la ', 'tacos', 'el ']},
+    'tacos': {'weight': 2, 'related_terms': []},
     'latin': {'weight': 0, 'related_terms': []},
     'indian': {'weight': 0, 'related_terms': ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala']},
-    'vietnamese': {'weight': 1, 'related_terms': ['pho', 'viet', 'dan', 'saigon']},
-    'chinese': {'weight': 2, 'related_terms': ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai']}, 
-    'sandwich': {'weight': 0, 'related_terms': ['sub', 'deli']}, 
-    'deli': {'weight': 0, 'related_terms': []}, 
-    'soup': {'weight': 0, 'related_terms': []}, 
+    'vietnamese': {'weight': 0, 'related_terms': ['pho', 'viet', 'dan', 'saigon']},
+    'chinese': {'weight': 0, 'related_terms': ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai']},
+    'sandwich': {'weight': 1, 'related_terms': ['sub', 'deli']},
+    'deli': {'weight': 0, 'related_terms': []},
+    'soup': {'weight': 0, 'related_terms': []},
     'sushi': {'weight': 0, 'related_terms': ['kura', 'revolving', 'nori']},  
-    'italian': {'weight': 0, 'related_terms': ['pizzeria', 'luigi', 'italiano', 'traditional']}, 
-    'pizza': {'weight': 0, 'related_terms': ['stone', 'pagliacci', 'domino', 'papa', 'mod']}, 
-    'burgers': {'weight': 0, 'related_terms': ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry']}, 
-    'thai': {'weight': 2, 'related_terms': ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle']}, 
+    'italian': {'weight': 0, 'related_terms': ['pizzeria', 'luigi', 'italiano', 'traditional']},
+    'pizza': {'weight': 0, 'related_terms': ['stone', 'pagliacci', 'domino', 'papa', 'mod']},
+    'burgers': {'weight': 0, 'related_terms': ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry']},
+    'thai': {'weight': 0, 'related_terms': ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle']},
     'noodles': {'weight': 0, 'related_terms': []},
     'ramen': {'weight': 0, 'related_terms': ['izayaka', 'noodle']},
-    'japanese': {'weight': 1, 'related_terms': ['izayaka', 'sushi', 'ramen']},
+    'japanese': {'weight': 0, 'related_terms': ['izayaka', 'sushi', 'ramen']},
     'curry': {'weight': 0, 'related_terms': []},
     'pho': {'weight': 0, 'related_terms': ['pho']},
-    'salad': {'weight': 0, 'related_terms': ['green', 'wild']},
+    'salad': {'weight': 1, 'related_terms': ['green', 'wild']},
     'sit down': {'weight': 0, 'related_terms': ['house', 'tavern']},
-    'fast food': {'weight': 0, 'related_terms': []}, 
-    'dim sum': {'weight': 1, 'related_terms': ['dim sum', 'dumpling', 'dumpling house']},
+    'fast food': {'weight': 0, 'related_terms': []},
+    'dim sum': {'weight': 0, 'related_terms': ['dim sum', 'dumpling', 'dumpling house']},
     'byo': {'weight': 0, 'related_terms': ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod']},
     'fries': {'weight': 0, 'related_terms': []},
     'rice': {'weight': 0, 'related_terms': []},
     'asian': {'weight': 0, 'related_terms': ['teriyaki']},
-    'korean': {'weight': 0, 'related_terms': ['bbq', 'barbeque', 'authentic']} 
+    'korean': {'weight': 0, 'related_terms': ['bbq', 'barbeque', 'authentic']}
 }
 
 restaurant_options = {}
 
-needDelivery = False 
+needDelivery = False
 priceRange = ['$','$$']
 maxPrice = priceRange[-1]
 
-# !!!! I THINK THE WAY WE ARE DOING IT HERE IS NOT AS SPECIFIC TO CUISINE - need to really drastically change the value based on the cuisine here 
+# !!!! I THINK THE WAY WE ARE DOING IT HERE IS NOT AS SPECIFIC TO CUISINE - need to really drastically change the value based on the cuisine here
 #first population of the possible list(the broadest version, we will narrow down from here after this)
 additionalPosSearchTerms = {}
 additionalNegSearchTerms = {}
@@ -169,7 +135,7 @@ for key, value in temp_list.items():
             additionalPosSearchTerms[key] = value['related_terms']
         # now we search yelp
         params['term'] = key
-        print(params) # testing 
+        print(params) # testing
         # Make a request to the Yelp API
         response = requests.get(api_url, headers=HEADERS, params=params)
 
@@ -185,7 +151,8 @@ for key, value in temp_list.items():
                     latitude=business['coordinates']['latitude'],
                     longitude=business['coordinates']['longitude'],
                     is_closed=business.get('is_closed', True),
-                    distance=business.get('distance', 0)
+                    distance=business.get('distance', 0),
+                    delivers='delivery' in business.get('transactions', [])
                 )
                 if restaurant in restaurant_options:
                     # Add the value to the existing value
@@ -200,42 +167,9 @@ for key, value in temp_list.items():
             additionalNegSearchTerms[key] = value['related_terms']
 
 
-print(restaurant_options) # idk what format this is going to print in 
+print(restaurant_options) # idk what format this is going to print in
 print('pos: ', additionalPosSearchTerms)
 print('neg: ', additionalNegSearchTerms)
-
-# next: go through restaurant_options and change the score for each restaurant depending on the other factors: 
-    # Factors: price range, distance (need a separate function to calculate this), ratings/stars 
-
-# final_restaurant_list = {}
-# secondary_options = {}
-
-# for key, value in restaurant_options.items():
-#     if restaurant.price in priceRange:
-#         print('restaurant is in price range.')
-#         print('checking {restaurant.name} with rating: {restaurant.rating}')
-#         if restaurant.rating >= 3.5: 
-#             print('restaurant has a great rating')
-#             final_restaurant_list[key] = value
-#         else:
-#             print('restaurant has below 3.5 stars')
-#             if restaurant.rating >= 3:
-#                 secondary_options[key] = value -1
-#     else:
-#         print('restaurant is not in price range.')
-#         if maxPrice+'$' == restaurant.price:  # this is how i'm trying to say it's ONE more $ sign, idk if it's right 
-#             secondary_options[key] = value
-
-# # print(final_restaurant_list)
-# # print(secondary_options) 
-
-# print('Final Restaurant List: ')
-# for key, value in final_restaurant_list.items():
-#     print(key.name, ': ', value)
-
-# print('Secondary Restaurant List: ')
-# for key, value in secondary_options.items():
-#     print(key.name, ': ', value)
 
 
     
