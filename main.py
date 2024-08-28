@@ -1,6 +1,7 @@
 import requests 
 
 
+
 # ################################################
 # api_key2 = 'd1e6067d83cdf4'
 # # Get the user's public IP address
@@ -54,7 +55,7 @@ class Restaurant:
 
 api_url = 'https://api.yelp.com/v3/businesses/search'
 # api_key = 'TEDWqCrmKb_w37qkJjS426xfoUGpBF1EQBdjxcJtKeXHgJEvAmCW4zFKrHFDvuUGN_ELrNQgEOzaK9taFY-DwvpjiPx1d7xtM5cZ3vnXA2gfEeCgAsAa32_cZY1rZnYx'
-api_key = '87qjzUYSUt1gI7_aZKUsEtOkafLQirJaXPiSdMVdNKJYS7f0HvaasYRJtx10VCjaPhAS4DxZVmC2VSUVjKfMUaZ9gw47usy_hOsQ15lJH4G5m24PfiRj'
+api_key = '87qjzUYSUt1gI7_aZKUsEtOkafLQirJaXPiSdMVdNKJYS7f0HvaasYRJtx10VCjaPhAS4DxZVmC2VSUVjKfMUaZ9gw47usy_hOsQ15lJH4G5m24PfiRj-7ydD7K7ZnYx'
 HEADERS = {'Authorization': f'Bearer {api_key}'}
 
 
@@ -118,6 +119,7 @@ temp_list = {
     'asian': {'weight': 0, 'related_terms': ['teriyaki']},
     'korean': {'weight': 0, 'related_terms': ['bbq', 'barbeque', 'authentic']} 
 }
+
 
 restaurant_options = {}
 

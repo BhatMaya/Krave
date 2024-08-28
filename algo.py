@@ -1,4 +1,3 @@
-from main import Restaurant, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms
 
 ### these fields will now be determined in testUI.py:
 
@@ -109,7 +108,7 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
 
     for key, value in restaurant_options.items():
         if key.price in price_range:
-            print(f"{key.name} is in price range.")
+            # print(f"{key.name} is in price range.")
             value += 1.5
             if key.rating >= 3.5:
                 value += 1.5
@@ -150,23 +149,23 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
             for term in related_terms:
                 if term.upper() in key.name.upper():
                     value += 0.5
-                    print('Good term given weight')
+                    # print('Good term given weight')
                     final_restaurant_list[key] = value
 
         for cuisine, related_terms in additional_neg_search_terms.items():
             for term in related_terms:
                 if term.upper() in key.name.upper():
                     value -= 3
-                    print('Wrong term filtered out')
+                    # print('Wrong term filtered out')
                     final_restaurant_list[key] = value
 
         if needs_delivery and not key.delivers:
             value = 0
-            print(f"{key.name} does not deliver")
+            # print(f"{key.name} does not deliver")
             final_restaurant_list[key] = value
 
     for key, value in final_restaurant_list.items():
-        print(f"{key.name}  raw score : {value}")
+        # print(f"{key.name}  raw score : {value}")
         if value <= 0:
             value = 0
         else:
@@ -176,7 +175,7 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
                     value = value - (value % 100) - 1
             else:
                 value *= 10
-        print(f"Krave score: {value}")
+        # print(f"Krave score: {value}")
         final_restaurant_list[key] = value
 
     sorted_final_restaurant_list = {k: v for k, v in sorted(final_restaurant_list.items(), key=lambda item: item[1], reverse=True)}

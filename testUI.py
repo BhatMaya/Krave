@@ -10,6 +10,16 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from main import Restaurant, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms
 from algo import rank_restaurants
+"""
+--------------------------------------------------------------------------
+
+"""
+
+
+"""
+--------------------------------------------------------------------------
+
+"""
 
 needDelivery = True
 priceRange = ['$','$$']
@@ -160,9 +170,19 @@ class MainScreen(Screen):
                     "related_terms": related_terms[tag]
                 }
 
+
         print("Related terms map:")
         print(final_map)
 
+    """
+----------------------------------------------------------------------
+
+    """
+    
+    """
+----------------------------------------------------------------------
+
+    """
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
@@ -173,18 +193,27 @@ class ResultsScreen(Screen):
         self.layout.clear_widgets()
 
         sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
+        top_three = {}
 
-        top_three = dict(list(sorted_tags.items())[:3])
+        
+        count = 0
+        for key, value in sorted_tags.items():
+            count=count+1
+            if count > 3:
+                break
+            else:
+                print(f"{key.name}: {value}")
+                top_three[key] = value
 
-        for key, value in top_three.items(): 
-            print(key.name)
-            print(key.value)
 
         podium_layout = FloatLayout()
-        for idx, (tag, weight) in enumerate(top_three):
-            podium_pos = {"center_x": 0.5, "center_y": 0.7 - idx * 0.3}
+        count2 = 0
+        for restaurant, score in (top_three.items()):
+            
+            podium_pos = {"center_x": 0.5, "center_y": 0.85 -  count2 * 0.2}
+            count2 = count2 + 1
             label = Button(
-                text=f'{idx + 1}. {tag} ({weight:.1f})',
+                text=f'{restaurant.name}. {score} ',
                 size_hint=(0.8, 0.1),
                 pos_hint=podium_pos,
                 background_color=(0.2, 0.2, 0.8, 1),  # Dark blue background
