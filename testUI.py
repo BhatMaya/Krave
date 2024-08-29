@@ -8,7 +8,7 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from main import Restaurant, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms
+from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 """
 --------------------------------------------------------------------------
@@ -23,6 +23,7 @@ from algo import rank_restaurants
 
 needDelivery = True
 priceRange = ['$','$$']
+final_map = {}
 
 class Picture:
     def __init__(self, image, tags):
@@ -126,6 +127,8 @@ class MainScreen(Screen):
         for tag in current_picture.tags:
             if tag in self.user_prefs.tag_points:
                 self.user_prefs.tag_points[tag] = max(self.user_prefs.tag_points[tag] - 0.5, 0)
+            else: 
+                self.user_prefs.tag_points[tag] = 0 
         self.swipe_animation('left')
 
     def show_next_picture(self, *args):
@@ -134,6 +137,7 @@ class MainScreen(Screen):
             self.image_widget.source = self.pictures[self.current_picture_index].image
             self.image_widget.pos = (self.image_widget.parent.width * 0.1, self.image_widget.pos[1])
         else:
+            self.generate_related_terms_map()
             self.show_results_screen()
 
     def show_results_screen(self):
@@ -162,7 +166,7 @@ class MainScreen(Screen):
             "curry": []
         }
 
-        final_map = {}
+        global final_map
         for tag, weight in self.user_prefs.tag_points.items():
             if tag in related_terms:
                 final_map[tag] = {
@@ -178,6 +182,7 @@ class MainScreen(Screen):
 ----------------------------------------------------------------------
 
     """
+
     
     """
 ----------------------------------------------------------------------
@@ -191,6 +196,13 @@ class ResultsScreen(Screen):
 
     def display_results(self, tag_points):
         self.layout.clear_widgets()
+
+        global final_map
+
+        restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
+        print("Restaurant Options:", restaurant_options)  # For testing
+        print("Positive Search Terms:", additionalPosSearchTerms)  # For testing
+        print("Negative Search Terms:", additionalNegSearchTerms)  # For testing
 
         sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
         top_three = {}
