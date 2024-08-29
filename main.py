@@ -138,7 +138,7 @@ def process_temp_list(temp_list):
         'term': 'restaurant',
         'latitude': latitude,
         'longitude': longitude,
-        'radius': 800,  # Radius in meters (5 miles)
+        'radius': 1200,  # Radius in meters (5 miles)
         'limit': 25  # Number of results to return (maximum is 50)
     }
 

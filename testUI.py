@@ -10,26 +10,20 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from main import Restaurant, process_temp_list
 from algo import rank_restaurants
-"""
---------------------------------------------------------------------------
-
-"""
 
 
-"""
---------------------------------------------------------------------------
-
-"""
-
-needDelivery = True
+# global variables (nD and pR will later be determined by user input)
+needDelivery = False
 priceRange = ['$','$$']
 final_map = {}
 
+# Picture class 
 class Picture:
     def __init__(self, image, tags):
         self.image = image
         self.tags = tags
 
+# creates tag_points map 
 class UserPreferences:
     def __init__(self):
         self.tag_points = {}
@@ -41,6 +35,7 @@ class UserPreferences:
             else:
                 self.tag_points[tag] = 1
 
+# main UI screen for swiping: contains pictures, swiping algo, map generation 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -54,19 +49,24 @@ class MainScreen(Screen):
             Picture("burger2.png", ["burger"]),
             Picture("sandwich.png", ["sandwich", "byo", "healthy"]),
             Picture("salad.png", ['salad', 'healthy', 'byo']),
-            Picture("thai.png", ["thai", "curry", "rice"])
+            Picture("thai.png", ["thai", "curry", "rice"]),
+            Picture("breakfast .png", ["breakfast"]),
+            Picture("fries .png", ["fries", "burger"]),
+            Picture("indian curry rice .png", ["indian", "curry", "rice"]),
+            Picture("indian curry rice 2.png", ["indian", "curry", "rice"]),
+            Picture("korean .png", ["korean"]),
         ]
 
         self.current_picture_index = 0
 
         layout = FloatLayout()
 
-        # Image Widget
-        self.image_widget = Image(source=self.pictures[self.current_picture_index].image, size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.6})
+        # creating image widgets & formatting 
+        self.image_widget = Image(source=self.pictures[self.current_picture_index].image, size_hint = (None, None),size=(500,500), allow_stretch=True, keep_ratio=True, pos_hint={"center_x": 0.5, "center_y": 0.6})
         self.add_border(self.image_widget)
         layout.add_widget(self.image_widget)
 
-        # Buttons
+        # button widgets & formatting 
         button_layout = BoxLayout(size_hint=(0.8, 0.1), pos_hint={"center_x": 0.5, "center_y": 0.1})
         button_layout.orientation = 'horizontal'
         button_layout.spacing = 10
@@ -108,19 +108,11 @@ class MainScreen(Screen):
         self.border.size = instance.size
         self.border.pos = instance.pos
 
-    def swipe_animation(self, direction):
-        if direction == "left":
-            animation = Animation(x=-self.image_widget.width, duration=0.5)
-        else:
-            animation = Animation(x=self.image_widget.parent.width, duration=0.5)
-
-        animation.bind(on_complete=self.show_next_picture)
-        animation.start(self.image_widget)
 
     def like_current_picture(self, instance):
         current_picture = self.pictures[self.current_picture_index]
         self.user_prefs.like_picture(current_picture)
-        self.swipe_animation('right')
+        self.show_next_picture()
 
     def dislike_current_picture(self, instance):
         current_picture = self.pictures[self.current_picture_index]
@@ -129,7 +121,7 @@ class MainScreen(Screen):
                 self.user_prefs.tag_points[tag] = max(self.user_prefs.tag_points[tag] - 0.5, 0)
             else: 
                 self.user_prefs.tag_points[tag] = 0 
-        self.swipe_animation('left')
+        self.show_next_picture()
 
     def show_next_picture(self, *args):
         if self.current_picture_index + 1 < len(self.pictures):
@@ -150,8 +142,8 @@ class MainScreen(Screen):
 
     def generate_related_terms_map(self):
         related_terms = {
-            "tacos": [],
-            "mexican": ["casita", "la", "tacos", "el"],
+            "tacos": ['taqueria', 'al pastor', 'birria'],
+            "mexican": ["casita", "la", "tacos", "el", 'agua', 'verde', 'roja', 'loco'],
             "pizza": ["stone", 'pagliacci', 'domino', 'papa', 'mod'],
             "italian": ['pizzeria', 'luigi', 'italiano', 'traditional'],
             "burger": ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry'],
@@ -163,7 +155,13 @@ class MainScreen(Screen):
             "healthy": [],
             "salad": ['green', 'wild'],
             "thai": ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle'],
-            "curry": []
+            "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
+            "breakfast": ['pancake', 'waffle', 'house'],
+            "fries": ['crispy', 'fry', 'burger', 'bottomless'],
+            "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
+            "korean": [],
+            "pho": ['pho'],
+            "banh mi": []
         }
 
         global final_map
@@ -178,36 +176,29 @@ class MainScreen(Screen):
         print("Related terms map:")
         print(final_map)
 
-    """
-----------------------------------------------------------------------
 
-    """
 
-    
-    """
-----------------------------------------------------------------------
-
-    """
+# results screen: calls to api based on user prefs from swipe screen, runs algo on it, and displays 
 class ResultsScreen(Screen):
+    
+    # constructor 
     def __init__(self, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
         self.layout = FloatLayout()
         self.add_widget(self.layout)
 
+    # calls api using main.py method, ranks restaurants with algo.py method, and displays results 
     def display_results(self, tag_points):
         self.layout.clear_widgets()
 
         global final_map
 
         restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
-        print("Restaurant Options:", restaurant_options)  # For testing
-        print("Positive Search Terms:", additionalPosSearchTerms)  # For testing
-        print("Negative Search Terms:", additionalNegSearchTerms)  # For testing
 
         sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
         top_three = {}
 
-        
+        # pull first 3 restaurants from list 
         count = 0
         for key, value in sorted_tags.items():
             count=count+1
@@ -252,6 +243,7 @@ class ResultsScreen(Screen):
         )
         popup.open()
 
+# main app run 
 class FoodRatingApp(App):
     def build(self):
         sm = ScreenManager()
