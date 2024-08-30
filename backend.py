@@ -5,6 +5,7 @@ from algo import rank_restaurants
 needDelivery = False
 priceRange = ['$','$$']
 final_map = {}
+tag_points = {}
 
 # Picture class 
 class Picture:
@@ -12,52 +13,75 @@ class Picture:
         self.image = image
         self.tags = tags
 
-# creates tag_points map 
-class UserPreferences:
-    def __init__(self):
-        self.tag_points = {}
+# # creates tag_points map 
+# class UserPreferences:
+#     def __init__(self):
+#         # self.tag_points = {}
 
-    def like_picture(self, picture):
-        for tag in picture.tags:
-            if tag in self.tag_points:
-                self.tag_points[tag] += 1
-            else:
-                self.tag_points[tag] = 1
+def like_picture(picture):
+    for tag in picture.tags:
+        if tag in tag_points:
+            tag_points[tag] += 1
+        else:
+            tag_points[tag] = 1
 
+def dislike_picture(picture): 
 
-
-    def generate_related_terms_map(self):
-    	related_terms = {
-            "tacos": ['taqueria', 'al pastor', 'birria'],
-            "mexican": ["casita", "la", "tacos", "el", 'agua', 'verde', 'roja', 'loco'],
-            "pizza": ["stone", 'pagliacci', 'domino', 'papa', 'mod'],
-            "italian": ['pizzeria', 'luigi', 'italiano', 'traditional'],
-            "burger": ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry'],
-            "chinese": ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai'],
-            "rice": [],
-            "sit-down": ['house', 'tavern'],
-            "sandwich": ['sub', 'deli'],
-            "byo": ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod'],
-            "healthy": [],
-            "salad": ['green', 'wild'],
-            "thai": ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle'],
-            "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
-            "breakfast": ['pancake', 'waffle', 'house'],
-            "fries": ['crispy', 'fry', 'burger', 'bottomless'],
-            "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
-            "korean": [],
-            "pho": ['pho'],
-            "banh mi": []
-        }
-
-       global final_map
-       for tag, weight in self.user_prefs.tag_points.items():
-           if tag in related_terms:
-               final_map[tag] = {
-                   "weight": weight,
-                   "related_terms": related_terms[tag]
-               }
+    for tag in picture.tags:
+        if tag in tag_points:
+            tag_points[tag] = max(tag_points[tag] - 0.5, 0)
+        else: 
+            tag_points[tag] = 0 
 
 
-        print("Related terms map:")
-        print(final_map)
+
+def generate_related_terms_map():
+    related_terms = {
+        "tacos": ['taqueria', 'al pastor', 'birria'],
+        "mexican": ["casita", "la", "tacos", "el", 'agua', 'verde', 'roja', 'loco'],
+        "pizza": ["stone", 'pagliacci', 'domino', 'papa', 'mod'],
+        "italian": ['pizzeria', 'luigi', 'italiano', 'traditional'],
+        "burger": ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry'],
+        "chinese": ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai'],
+        "rice": [],
+        "sit-down": ['house', 'tavern'],
+        "sandwich": ['sub', 'deli'],
+        "byo": ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod'],
+        "healthy": [],
+        "salad": ['green', 'wild'],
+        "thai": ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle'],
+        "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
+        "breakfast": ['pancake', 'waffle', 'house'],
+        "fries": ['crispy', 'fry', 'burger', 'bottomless'],
+        "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
+        "korean": [],
+        "pho": ['pho'],
+        "banh mi": [],
+        "italian": ['pasta', 'pizzeria'],
+        "pasta": [],
+    }
+
+    global final_map
+    global tag_points
+    for tag, weight in tag_points.items():
+        if tag in related_terms:
+            final_map[tag] = {
+                "weight": weight,
+                "related_terms": related_terms[tag]
+            }
+
+    print("Related terms map:")
+    print(final_map)
+
+
+
+def generate_sorted_restaurants(): 
+
+	
+    global final_map	
+
+    restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
+
+    sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
+
+    return sorted_tags

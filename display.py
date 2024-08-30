@@ -8,7 +8,8 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture, UserPreferences, needDelivery, priceRange
+from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture
+from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 
 
@@ -17,7 +18,7 @@ from algo import rank_restaurants
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        self.user_prefs = UserPreferences()
+        # u.user_prefs = UserPreferences()
 
         self.pictures = [
             Picture("tacos.png", ["tacos", "mexican", "latin"]),
@@ -33,6 +34,7 @@ class MainScreen(Screen):
             Picture("indian curry rice .png", ["indian", "curry", "rice"]),
             Picture("indian curry rice 2.png", ["indian", "curry", "rice"]),
             Picture("korean .png", ["korean"]),
+            Picture("italian restaurant .png", ["italian", "sit-down", "pasta"]),
         ]
 
         self.current_picture_index = 0
@@ -89,16 +91,12 @@ class MainScreen(Screen):
 
     def like_current_picture(self, instance):
         current_picture = self.pictures[self.current_picture_index]
-        self.user_prefs.like_picture(current_picture)
+        like_picture(current_picture)
         self.show_next_picture()
 
     def dislike_current_picture(self, instance):
         current_picture = self.pictures[self.current_picture_index]
-        for tag in current_picture.tags:
-            if tag in self.user_prefs.tag_points:
-                self.user_prefs.tag_points[tag] = max(self.user_prefs.tag_points[tag] - 0.5, 0)
-            else: 
-                self.user_prefs.tag_points[tag] = 0 
+        dislike_picture(current_picture)
         self.show_next_picture()
 
     def show_next_picture(self, *args):
@@ -107,52 +105,54 @@ class MainScreen(Screen):
             self.image_widget.source = self.pictures[self.current_picture_index].image
             self.image_widget.pos = (self.image_widget.parent.width * 0.1, self.image_widget.pos[1])
         else:
-            self.generate_related_terms_map()
+            generate_related_terms_map()
             self.show_results_screen()
 
     def show_results_screen(self):
         self.manager.current = 'results'
-        self.manager.get_screen('results').display_results(self.user_prefs.tag_points)
+        self.manager.get_screen('results').display_results()
 
     def disable_buttons(self):
         self.like_button.disabled = True
         self.dislike_button.disabled = True
 
-    def generate_related_terms_map(self):
-        related_terms = {
-            "tacos": ['taqueria', 'al pastor', 'birria'],
-            "mexican": ["casita", "la", "tacos", "el", 'agua', 'verde', 'roja', 'loco'],
-            "pizza": ["stone", 'pagliacci', 'domino', 'papa', 'mod'],
-            "italian": ['pizzeria', 'luigi', 'italiano', 'traditional'],
-            "burger": ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry'],
-            "chinese": ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai'],
-            "rice": [],
-            "sit-down": ['house', 'tavern'],
-            "sandwich": ['sub', 'deli'],
-            "byo": ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod'],
-            "healthy": [],
-            "salad": ['green', 'wild'],
-            "thai": ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle'],
-            "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
-            "breakfast": ['pancake', 'waffle', 'house'],
-            "fries": ['crispy', 'fry', 'burger', 'bottomless'],
-            "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
-            "korean": [],
-            "pho": ['pho'],
-            "banh mi": []
-        }
+    # def generate_related_terms_map(self):
+    #     related_terms = {
+    #         "tacos": ['taqueria', 'al pastor', 'birria'],
+    #         "mexican": ["casita", "la", "tacos", "el", 'agua', 'verde', 'roja', 'loco'],
+    #         "pizza": ["stone", 'pagliacci', 'domino', 'papa', 'mod'],
+    #         "italian": ['pizzeria', 'luigi', 'italiano', 'traditional'],
+    #         "burger": ['cow', 'fat', 'big', 'chick', 'chicken', 'hungry'],
+    #         "chinese": ['dan', 'din', 'chiang', 'xian', 'noodle', 'dumpling', 'hong kong', 'shangai'],
+    #         "rice": [],
+    #         "sit-down": ['house', 'tavern'],
+    #         "sandwich": ['sub', 'deli'],
+    #         "byo": ['bowl', 'salad', 'chipotle', 'sandwich', 'sub', 'mod'],
+    #         "healthy": [],
+    #         "salad": ['green', 'wild'],
+    #         "thai": ['khao', 'kai', '65', 'thai', 'bai tong', 'ginger', 'basil', 'bangkok', 'noodle'],
+    #         "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
+    #         "breakfast": ['pancake', 'waffle', 'house'],
+    #         "fries": ['crispy', 'fry', 'burger', 'bottomless'],
+    #         "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
+    #         "korean": [],
+    #         "pho": ['pho'],
+    #         "banh mi": [],
+    #         "italian": ['pasta', 'pizzeria'],
+    #         "pasta": [],
+    #     }
 
-        global final_map
-        for tag, weight in self.user_prefs.tag_points.items():
-            if tag in related_terms:
-                final_map[tag] = {
-                    "weight": weight,
-                    "related_terms": related_terms[tag]
-                }
+    #     global final_map
+    #     for tag, weight in self.user_prefs.tag_points.items():
+    #         if tag in related_terms:
+    #             final_map[tag] = {
+    #                 "weight": weight,
+    #                 "related_terms": related_terms[tag]
+    #             }
 
 
-        print("Related terms map:")
-        print(final_map)
+    #     print("Related terms map:")
+    #     print(final_map)
 
 
 
@@ -166,19 +166,20 @@ class ResultsScreen(Screen):
         self.add_widget(self.layout)
 
     # calls api using main.py method, ranks restaurants with algo.py method, and displays results 
-    def display_results(self, tag_points):
+    def display_results(self):
         self.layout.clear_widgets()
 
         global final_map
 
-        restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
+        # restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
 
-        sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
+        # sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
+        final_list = generate_sorted_restaurants()
         top_three = {}
 
         # pull first 3 restaurants from list 
         count = 0
-        for key, value in sorted_tags.items():
+        for key, value in final_list.items():
             count=count+1
             if count > 3:
                 break
