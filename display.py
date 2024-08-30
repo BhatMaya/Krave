@@ -204,18 +204,21 @@ class ResultsScreen(Screen):
                 font_size='24sp',
                 bold=True
             )
-            label.bind(on_press=lambda btn: self.show_popup(btn.text))
+            rating = restaurant.rating
+            distance = restaurant.distance
+            label.bind(on_press=lambda btn: self.show_popup(btn.text, rating, distance, score))
             podium_layout.add_widget(label)
 
         self.layout.add_widget(podium_layout)
 
-    def show_popup(self, text):
-        tag = text.split(' ')[1]  # Extract tag from button text
+    def show_popup(self, text, rating, distance, score):
+        tag = text[:-5]  # Extract tag from button text
         content = FloatLayout()
-        content.add_widget(Label(text=f"More information about {tag}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.5}))
+        content.add_widget(Label(text=f"Distance: {distance}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.7}))
+        content.add_widget(Label(text=f"Rating: {rating}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.6}))
 
         popup = Popup(
-            title=f"{tag} Details",
+            title=f"{tag}",
             content=content,
             size_hint=(0.8, 0.8),
             background_color=(0.5, 0.5, 0.5, 1)  # Gray background
