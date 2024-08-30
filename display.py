@@ -8,33 +8,10 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from main import Restaurant, process_temp_list
+from backend import Picture, UserPreferences, needDelivery, priceRange
 from algo import rank_restaurants
-#heyyyyyyyy
 
 
-# global variables (nD and pR will later be determined by user input)
-needDelivery = False
-priceRange = ['$','$$']
-final_map = {}
-
-# Picture class 
-class Picture:
-    def __init__(self, image, tags):
-        self.image = image
-        self.tags = tags
-
-# creates tag_points map 
-class UserPreferences:
-    def __init__(self):
-        self.tag_points = {}
-
-    def like_picture(self, picture):
-        for tag in picture.tags:
-            if tag in self.tag_points:
-                self.tag_points[tag] += 1
-            else:
-                self.tag_points[tag] = 1
 
 # main UI screen for swiping: contains pictures, swiping algo, map generation 
 class MainScreen(Screen):
