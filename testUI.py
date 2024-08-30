@@ -56,6 +56,7 @@ class MainScreen(Screen):
             Picture("indian curry rice .png", ["indian", "curry", "rice"]),
             Picture("indian curry rice 2.png", ["indian", "curry", "rice"]),
             Picture("korean .png", ["korean"]),
+            Picture("italian restaurant .png", ["italian", "sit-down", "pasta"]),
         ]
 
         self.current_picture_index = 0
@@ -162,7 +163,9 @@ class MainScreen(Screen):
             "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
             "korean": [],
             "pho": ['pho'],
-            "banh mi": []
+            "banh mi": [],
+            "italian": ['pasta', 'pizzeria'],
+            "pasta": [],
         }
 
         global final_map
