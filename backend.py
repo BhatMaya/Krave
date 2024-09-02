@@ -59,6 +59,9 @@ def generate_related_terms_map():
         "banh mi": [],
         "italian": ['pasta', 'pizzeria'],
         "pasta": [],
+        "noodles": [],
+        "chipotle": ['qdoba'],
+        "byo": [],
     }
 
     global final_map
