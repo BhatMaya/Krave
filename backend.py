@@ -13,11 +13,6 @@ class Picture:
         self.image = image
         self.tags = tags
 
-# # creates tag_points map 
-# class UserPreferences:
-#     def __init__(self):
-#         # self.tag_points = {}
-
 def like_picture(picture):
     for tag in picture.tags:
         if tag in tag_points:
@@ -53,7 +48,7 @@ def generate_related_terms_map():
         "curry": ['katsu', 'jalfrezi', 'vindaloo', 'butter chicken', 'india', 'chili', 'taj', 'palace', 'royal', 'mahal', 'north'],
         "breakfast": ['pancake', 'waffle', 'house'],
         "fries": ['crispy', 'fry', 'burger', 'bottomless'],
-        "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste'],
+        "indian": ['taj', 'palace', 'royal', 'mahal', 'mirchi', 'chaat', 'dosa', 'masala', 'north', 'chili', 'south', 'thali', 'taste', 'tandoori', 'jewel', 'bombay', 'india', 'maharaja', 'spice', 'bengal', 'roti'],
         "korean": [],
         "pho": ['pho'],
         "banh mi": [],

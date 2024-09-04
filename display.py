@@ -23,20 +23,20 @@ class MainScreen(Screen):
         self.pictures = [
             Picture("tacos.png", ["tacos", "mexican", "latin"]),
             Picture("pizza.png", ["pizza", "italian"]),
-            Picture("burger.png", ["burger", "sit-down"]),
+            Picture("burger.png", ["burger"]),
             Picture("chinese.png", ["chinese", "rice"]),
             Picture("burger2.png", ["burger"]),
-            Picture("sandwich.png", ["sandwich", "byo", "healthy"]),
-            Picture("salad.png", ['salad', 'healthy', 'byo']),
+            Picture("sandwich.png", ["sandwich", "healthy"]),
+            Picture("salad.png", ['salad', 'healthy']),
             Picture("thai.png", ["thai", "curry", "rice"]),
             Picture("breakfast .png", ["breakfast"]),
             Picture("fries .png", ["fries", "burger"]),
-            Picture("indian curry rice .png", ["indian", "curry", "rice"]),
-            Picture("indian curry rice 2.png", ["indian", "curry", "rice"]),
+            Picture("indian curry rice .png", ["indian", "curry"]),
+            Picture("indian curry rice 2.png", ["indian", "curry"]),
             Picture("korean .png", ["korean"]),
-            Picture("italian restaurant .png", ["italian", "sit-down", "pasta"]),
+            Picture("italian restaurant .png", ["italian", "pasta"]),
             Picture("noodles thai .png", ["noodles", "thai"]),
-            Picture("mexican chipotle byo .png", ["mexican", "chipotle", "byo"]),
+            Picture("mexican chipotle byo .png", ["mexican", "chipotle"]),
         ]
 
         self.current_picture_index = 0
@@ -135,9 +135,7 @@ class ResultsScreen(Screen):
 
         global final_map
 
-        # restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
-
-        # sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
+        
         final_list = generate_sorted_restaurants()
         top_three = {}
 
