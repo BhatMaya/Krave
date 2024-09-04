@@ -34,7 +34,6 @@ def process_temp_list(temp_list):
     latitude = 47.656610017739375 
     longitude = -122.31540319155656 
 
-
     params = {
         'term': 'restaurant',
         'latitude': latitude,

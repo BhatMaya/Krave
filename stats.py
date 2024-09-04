@@ -131,14 +131,14 @@ testRestaurants[r6] = 3
 testRestaurants[r7] = 3
 
 
+def standardizationProcess(restaurant_options):
+    data = prepForStats(restaurant_options)
+    split_vals = defineQuartiles(data)
+    quartilesList = splitQuartiles(restaurant_options, split_vals)
+    quartilesList = revalue(quartilesList)
+    standardized_vals_restaurant_list = recombine(quartilesList)
+    return standardized_vals_restaurant_list
 
-# can later loop through restaurant_options to get a list of just the values like this 
-data = prepForStats(testRestaurants)
-
-## aside from initially putting the vals of restaurant_options into a list of just the values ("data"), this is the order 
-##      we will use these methods in. we can also change defineQuartiles to work w the OG full map instead of a list 
-split_vals = defineQuartiles(data)
-quartilesList = splitQuartiles(testRestaurants, split_vals)
-quartilesList = revalue(quartilesList)
-standardized_vals_restaurant_list = recombine(quartilesList)
-print(standardized_vals_restaurant_list)
+def standardDeviation(restaurant_options):
+    data = prepForStats(restaurant_options)
+    return statistics.stdev(data)
