@@ -1,6 +1,15 @@
 from main import Restaurant
 import statistics 
 
+
+# returns weights, the list of values/frequencies to give to defineQuartiles 
+def prepForStats(restaurant_options):
+    weights = []
+    for key, value in restaurant_options.items():
+        weights.append(value)
+    weights.sort()
+    return weights
+
 # returns array split_vals of length 3, where split[i] is the next value to split restaurant_options at 
 def defineQuartiles(weights):
     split_vals = []
@@ -12,7 +21,7 @@ def defineQuartiles(weights):
     return split_vals
 
 
-# returns the first, second, third, and fourth quartile of restaurant_options map as their own maps 
+# returns a list of the quartile of restaurant_options map as their own maps 
 def splitQuartiles(restaurant_options, split_vals):
     firstQuartile = {}
     secondQuartile = {}
@@ -27,42 +36,51 @@ def splitQuartiles(restaurant_options, split_vals):
             thirdQuartile[key] = value
         if value >= split_vals[2]:
             fourthQuartile[key] = value     
-    return firstQuartile, secondQuartile, thirdQuartile, fourthQuartile 
+    listedQuartiles = []
+    if (len(firstQuartile) != 0):
+        listedQuartiles.append(firstQuartile)
+    
+    if (len(secondQuartile) != 0):
+        listedQuartiles.append(secondQuartile)
+    
+    if (len(thirdQuartile) != 0):
+        listedQuartiles.append(thirdQuartile)
+    
+    if (len(fourthQuartile) != 0):
+        listedQuartiles.append(fourthQuartile)
+    
+    return listedQuartiles 
 
 
-# reassigns value of each restaurant in a quartile to a standardized start val based on quartile data 
-def revalue(firstQuartile, secondQuartile, thirdQuartile, fourthQuartile): 
-    subVal1 = getSubtractionVal(thirdQuartile, fourthQuartile)
-    subVal2 = getSubtractionVal(secondQuartile, thirdQuartile)
-    subVal3 = getSubtractionVal(firstQuartile, secondQuartile)
-    for key, value in fourthQuartile.items():
-        fourthQuartile[key] = 10
-    subtractFrom = 10;
-    subVal = subVal1
-    for key, value in thirdQuartile.items():
-        thirdQuartile[key] = subtractFrom - subVal
-    subtractFrom = subtractFrom - subVal
-    subVal = subVal2
-    for key, value in secondQuartile.items():
-        secondQuartile[key] = subtractFrom - subVal
-    subtractFrom = subtractFrom - subVal
-    subVal = subVal3
-    for key, value in firstQuartile.items():
-        firstQuartile[key] = subtractFrom - subVal
+# reassigns value of each restaurant in a quartile to a standardized start val based on quartile data
+# returns the revalued list of quartiles 
+def revalue(listedQuartiles): 
+    i = len(listedQuartiles) - 1
+    subVals = []
+    while i > 0:
+        subVals.append(getSubtractionVal(listedQuartiles[i-1], listedQuartiles[i]))
+        i = i - 1
+    
+    i = len(listedQuartiles) - 1
+    replaceVal = 10
+    subVals.append(0)
+    while i >= 0:
+        replaceVal = replaceVal - subVals[i]
+        for key, value in listedQuartiles[i].items():
+            listedQuartiles[i][key] = replaceVal
+        i = i - 1
+    return listedQuartiles 
 
-    return firstQuartile, secondQuartile, thirdQuartile, fourthQuartile
-
-def recombine(firstQuartile, secondQuartile, thirdQuartile, fourthQuartile):
+# recombines the list of quartiles into the final standardizes restaurant_options map 
+def recombine(listedQuartiles):
     restaurant_options = {}
-    for key, value in firstQuartile.items():
-        restaurant_options[key] = value
-    for key, value in secondQuartile.items():
-        restaurant_options[key] = value
-    for key, value in thirdQuartile.items():
-        restaurant_options[key] = value
-    for key, value in fourthQuartile.items():
-        restaurant_options[key] = value
-    return restaurant_options    
+    i = 0
+    while i < len(listedQuartiles):
+        for key, value in listedQuartiles[i].items():
+            restaurant_options[key] = value
+        i = i + 1
+    return restaurant_options
+
 
 #given two adjacent quartiles, returns a decimal value to decrement the starting val of the restaurants in the lower quartile by 
 def getSubtractionVal(lowerQ, higherQ): 
@@ -86,6 +104,13 @@ def getSubtractionVal(lowerQ, higherQ):
         #this is meant to be taken as an error code cause the higher quartile should never be 0 (i think). 
 
 
+
+
+
+
+
+
+
 ##Unit Testing 
 r0 = Restaurant("r0", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
 r1 = Restaurant("r1", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
@@ -97,23 +122,23 @@ r6 = Restaurant("r6", "address", "price", 0.5, "latitude", "longitude", "isclose
 r7 = Restaurant("r7", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
 testRestaurants = {}
 testRestaurants[r0] = 1
-testRestaurants[r1] = 2
-testRestaurants[r2] = 2
-testRestaurants[r3] = 4
-testRestaurants[r4] = 6
-testRestaurants[r5] = 6
-testRestaurants[r6] = 9
-testRestaurants[r7] = 10
+testRestaurants[r1] = 1
+testRestaurants[r2] = 1
+testRestaurants[r3] = 1
+testRestaurants[r4] = 3
+testRestaurants[r5] = 3
+testRestaurants[r6] = 3
+testRestaurants[r7] = 3
 
 
 
 # can later loop through restaurant_options to get a list of just the values like this 
-data = [1, 2, 2, 4, 6, 6, 9, 10]
+data = prepForStats(testRestaurants)
 
 ## aside from initially putting the vals of restaurant_options into a list of just the values ("data"), this is the order 
 ##      we will use these methods in. we can also change defineQuartiles to work w the OG full map instead of a list 
 split_vals = defineQuartiles(data)
-first, second, third, fourth = splitQuartiles(testRestaurants, split_vals)
-first, second, third, fourth = revalue(first, second, third, fourth)
-standardized_vals_restaurant_list = recombine(first, second, third, fourth)
+quartilesList = splitQuartiles(testRestaurants, split_vals)
+quartilesList = revalue(quartilesList)
+standardized_vals_restaurant_list = recombine(quartilesList)
 print(standardized_vals_restaurant_list)
