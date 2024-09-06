@@ -8,7 +8,7 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture
+from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value
 from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 
@@ -108,11 +108,14 @@ class MainScreen(Screen):
             self.image_widget.pos = (self.image_widget.parent.width * 0.1, self.image_widget.pos[1])
         else:
             generate_related_terms_map()
-            self.show_results_screen()
+            self.show_yes_no_page()
 
-    def show_results_screen(self):
-        self.manager.current = 'results'
-        self.manager.get_screen('results').display_results()
+    # def show_results_screen(self):
+    #     self.manager.current = 'results'
+    #     self.manager.get_screen('results').display_results()
+    def show_yes_no_page(self): 
+        self.manager.current = 'yesno'
+        self.manager.get_screen('yesno').display_page()
 
     def disable_buttons(self):
         self.like_button.disabled = True
@@ -174,7 +177,7 @@ class ResultsScreen(Screen):
         self.layout.add_widget(podium_layout)
 
     def show_popup(self, text, rating, distance, score):
-        tag = text[:-5]  # Extract tag from button text
+        tag = text  # Extract tag from button text
         content = FloatLayout()
         content.add_widget(Label(text=f"Distance: {distance}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.7}))
         content.add_widget(Label(text=f"Rating: {rating}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.6}))
@@ -187,12 +190,88 @@ class ResultsScreen(Screen):
         )
         popup.open()
 
+    def show_yes_no_page(self): 
+        self.manager.current = 'yesno'
+        self.manager.get_screen('yesno').display_page()
+
+class YesNoPage(Screen): 
+    #constructor 
+    def __init__(self, **kwargs): 
+        super(YesNoPage,self).__init__(**kwargs)
+        self.layout = FloatLayout()
+        self.add_widget(self.layout)
+
+
+    #displaying the yes/no page
+
+    def display_page(self):
+        self.layout.clear_widgets
+        self.add_widget(Label(text=f"Needs Delivery?", size_hint=(3,3), pos_hint={"center_x":0.1, "center_y":0.8}))
+        # button widgets & formatting 
+        button_layout = BoxLayout(size_hint=(0.2, 0.1), pos_hint={"center_x": 0.3, "center_y": 0.8})
+        button_layout.orientation = 'horizontal'
+        button_layout.spacing = 10
+
+        self.yes_delivery = Button(
+            text='Yes',
+            size_hint=(0.4, 1),
+            background_color=(0, 0.5, 0, 1),
+            background_normal='',
+            color=(1, 1, 1, 1),
+            font_size='20sp',
+            bold=True
+
+        )
+        button_layout.add_widget(self.yes_delivery)
+        self.yes_delivery.bind(on_press=self.click_yes_button)
+        
+
+        self.no_delivery = Button(
+            text='No',
+            size_hint=(0.4, 1),
+            background_color=(0.5, 0, 0, 1),
+            background_normal='',
+            color=(1, 1, 1, 1),
+            font_size='20sp',
+            bold=True
+
+        )
+
+        button_layout.add_widget(self.no_delivery)
+        self.no_delivery.bind(on_press=self.click_no_button)
+
+        self.layout.add_widget(button_layout)
+
+
+    def click_yes_button(self, instance): 
+        self.yes_delivery.background_color=(0, 1, 0, 1)
+        self.no_delivery.background_color=(0.5, 0, 0, 1)
+        set_truth_value(True)
+
+    def click_no_button(self, instance): 
+        self.no_delivery.background_color=(1, 0, 0, 1)
+        self.yes_delivery.background_color=(0, 0.5, 0, 1)
+        set_truth_value(False)
+
+
+    
+
+
+
+
+
+
+
+
+
+
 # main app run 
 class FoodRatingApp(App):
     def build(self):
         sm = ScreenManager()
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(ResultsScreen(name='results'))
+        sm.add_widget(YesNoPage(name='yesno'))
         return sm
 
 if __name__ == '__main__':

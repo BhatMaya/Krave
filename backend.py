@@ -28,6 +28,11 @@ def dislike_picture(picture):
         else: 
             tag_points[tag] = 0 
 
+def set_truth_value(delivery_choice): 
+    needDelivery = delivery_choice
+    print(needDelivery)
+
+
 
 
 def generate_related_terms_map():
