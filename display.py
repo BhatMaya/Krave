@@ -168,7 +168,7 @@ class ResultsScreen(Screen):
             )
             rating = restaurant.rating
             distance = restaurant.distance
-            label.bind(on_press=lambda btn: self.show_popup(btn.text, rating, distance, score))
+            label.bind(on_press=lambda btn, r=restaurant, d=distance, s=score: self.show_popup(r.name, r.rating, d, s))
             podium_layout.add_widget(label)
 
         self.layout.add_widget(podium_layout)
