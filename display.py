@@ -1,7 +1,9 @@
 from kivy.app import App
 from kivy.uix.image import Image
 from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, RoundedRectangle
 from kivy.animation import Animation
@@ -206,7 +208,8 @@ class YesNoPage(Screen):
 
     def display_page(self):
         self.layout.clear_widgets
-        self.add_widget(Label(text=f"Needs Delivery?", size_hint=(3,3), pos_hint={"center_x":0.1, "center_y":0.8}))
+        self.add_widget(Label(text=f"Needs Delivery?", size_hint=(3,3), pos_hint={"center_x":0.1, "center_y":0.8}, bold=True))
+        self.add_widget(Label(text=f"Distance?", size_hint=(3,3), pos_hint={"center_x":0.08, "center_y": 0.6}, bold=True))
         # button widgets & formatting 
         button_layout = BoxLayout(size_hint=(0.2, 0.1), pos_hint={"center_x": 0.3, "center_y": 0.8})
         button_layout.orientation = 'horizontal'
@@ -240,7 +243,38 @@ class YesNoPage(Screen):
         button_layout.add_widget(self.no_delivery)
         self.no_delivery.bind(on_press=self.click_no_button)
 
+
+
         self.layout.add_widget(button_layout)
+
+
+        #########add the dropdown menu##########
+
+        #creating the main layout
+        dropdown_layout = FloatLayout()
+
+        dropdown = DropDown()
+
+        #create the buttons that will go inside the dropdown(5,10,15,20+ miles)
+        for option in ["5 miles", "10 miles", "15 miles", "20+miles"]: 
+            btn = Button(text=option, size_hint_y=None, height=44, bold = True)
+            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+            dropdown.add_widget(btn)
+
+        #creating the main button
+        main_button = Button(text='Select a distance', size_hint=(None,None), size=(300,60), bold=True)
+        main_button.pos = (300, 685)
+
+        def on_button_click(instance):
+            dropdown.open(instance)
+
+        main_button.bind(on_release=on_button_click)
+
+
+        dropdown.bind(on_select=lambda instance, x: setattr(main_button, 'text', x))
+        dropdown_layout.add_widget(main_button)
+        self.layout.add_widget(dropdown_layout)
+
 
 
     def click_yes_button(self, instance): 
