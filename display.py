@@ -10,7 +10,7 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value
+from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance
 from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 
@@ -196,6 +196,7 @@ class ResultsScreen(Screen):
         self.manager.current = 'yesno'
         self.manager.get_screen('yesno').display_page()
 
+
 class YesNoPage(Screen): 
     #constructor 
     def __init__(self, **kwargs): 
@@ -245,7 +246,35 @@ class YesNoPage(Screen):
 
 
 
+
         self.layout.add_widget(button_layout)
+
+
+        confirm_button = Button(text="Confirm", size_hint=(None, None), size = (300,300), bold=True)
+        confirm_button.pos_hint={"center_x": 0.5, "center_y": 0.1}
+        self.add_widget(confirm_button)
+
+
+        def on_confirm_press(instance): 
+            if (main_button.text == "<1 mile"):
+                set_distance(1)
+            elif (main_button.text == "3 miles"):
+                set_distance(3)
+            elif (main_button.text == "5 miles"):
+                set_distance(5)
+            elif (main_button.text == "7 miles"):
+                set_distance(7)
+            elif (main_button.text == "10 miles"):
+                set_distance(10)
+            else:
+                print("no distance given")
+
+            self.show_results_screen()
+
+
+        confirm_button.bind(on_press=on_confirm_press)
+
+
 
 
         #########add the dropdown menu##########
@@ -256,17 +285,19 @@ class YesNoPage(Screen):
         dropdown = DropDown()
 
         #create the buttons that will go inside the dropdown(5,10,15,20+ miles)
-        for option in ["5 miles", "10 miles", "15 miles", "20+miles"]: 
+        for option in ["<1 mile" ,"3 miles", "5 miles", "7 miles", "10 miles"]: 
             btn = Button(text=option, size_hint_y=None, height=44, bold = True)
             btn.bind(on_release=lambda btn: dropdown.select(btn.text))
             dropdown.add_widget(btn)
 
         #creating the main button
         main_button = Button(text='Select a distance', size_hint=(None,None), size=(300,60), bold=True)
-        main_button.pos = (300, 685)
+        main_button.pos_hint={"center_x": 0.3, "center_y": 0.6}
 
         def on_button_click(instance):
             dropdown.open(instance)
+
+
 
         main_button.bind(on_release=on_button_click)
 
@@ -274,6 +305,9 @@ class YesNoPage(Screen):
         dropdown.bind(on_select=lambda instance, x: setattr(main_button, 'text', x))
         dropdown_layout.add_widget(main_button)
         self.layout.add_widget(dropdown_layout)
+
+
+
 
 
 
@@ -286,6 +320,11 @@ class YesNoPage(Screen):
         self.no_delivery.background_color=(1, 0, 0, 1)
         self.yes_delivery.background_color=(0, 0.5, 0, 1)
         set_truth_value(False)
+
+    def show_results_screen(self):
+        self.manager.current = 'results'
+        self.manager.get_screen('results').display_results() 
+
 
 
     

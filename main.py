@@ -25,20 +25,22 @@ class Restaurant:
         return hash(self.name)
 
 
-def process_temp_list(temp_list):
+def process_temp_list(temp_list, distance):
     # global api_url, headers, params
     api_url = 'https://api.yelp.com/v3/businesses/search'
     api_key = '87qjzUYSUt1gI7_aZKUsEtOkafLQirJaXPiSdMVdNKJYS7f0HvaasYRJtx10VCjaPhAS4DxZVmC2VSUVjKfMUaZ9gw47usy_hOsQ15lJH4G5m24PfiRj-7ydD7K7ZnYx'
     HEADERS = {'Authorization': f'Bearer {api_key}'}
 
-    latitude = 47.656610017739375 
-    longitude = -122.31540319155656 
+    latitude = 47.60456 #47.656610017739375 
+    longitude = -122.03368#-122.31540319155656 
+    meters = round(1609.344*distance)
+
 
     params = {
         'term': 'restaurant',
         'latitude': latitude,
         'longitude': longitude,
-        'radius': 1200,  # Radius in meters (5 miles)
+        'radius': meters,  # Radius in meters (5 miles)
         'limit': 25  # Number of results to return (maximum is 50)
     }
 

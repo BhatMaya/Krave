@@ -3,9 +3,10 @@ from algo import rank_restaurants
 
 # global variables (nD and pR will later be determined by user input)
 needDelivery = False
-priceRange = ['$','$$']
+priceRange = ['$']
 final_map = {}
 tag_points = {}
+distance = 0
 
 # Picture class 
 class Picture:
@@ -31,6 +32,10 @@ def dislike_picture(picture):
 def set_truth_value(delivery_choice): 
     needDelivery = delivery_choice
     print(needDelivery)
+
+def set_distance(distance_choice): 
+    distance = distance_choice
+    print(distance)
 
 
 
@@ -83,7 +88,7 @@ def generate_sorted_restaurants():
 	
     global final_map	
 
-    restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map)
+    restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map, distance)
 
     sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
 
