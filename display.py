@@ -10,7 +10,7 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance
+from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range
 from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 
@@ -211,6 +211,7 @@ class YesNoPage(Screen):
         self.layout.clear_widgets
         self.add_widget(Label(text=f"Needs Delivery?", size_hint=(3,3), pos_hint={"center_x":0.1, "center_y":0.8}, bold=True))
         self.add_widget(Label(text=f"Distance?", size_hint=(3,3), pos_hint={"center_x":0.08, "center_y": 0.6}, bold=True))
+        self.add_widget(Label(text=f"Price Range?", size_hint=(3,3), pos_hint={"center_x":0.1, "center_y": 0.4}, bold=True))
         # button widgets & formatting 
         button_layout = BoxLayout(size_hint=(0.2, 0.1), pos_hint={"center_x": 0.3, "center_y": 0.8})
         button_layout.orientation = 'horizontal'
@@ -244,6 +245,71 @@ class YesNoPage(Screen):
         button_layout.add_widget(self.no_delivery)
         self.no_delivery.bind(on_press=self.click_no_button)
 
+
+        self.one = Button(
+            text='$',
+            size_hint=(0.1, 0.1),
+            background_color=(1, 1, 1, 1),
+            background_normal='',
+            color=(0, 0, 0, 1),
+            font_size='18sp',
+            bold=True,
+            pos_hint={"center_x":0.25, "center_y": 0.4}
+
+        )
+        self.one.bind(on_press=self.click_price_range_one)
+
+        self.add_widget(self.one)
+
+
+        self.two = Button(
+            text='$$',
+            size_hint=(0.1, 0.1),
+            background_color=(1, 1, 1, 1),
+            background_normal='',
+            color=(0, 0, 0, 1),
+            font_size='18sp',
+            bold=True,
+            pos_hint={"center_x":0.4, "center_y": 0.4}
+
+        )
+        self.two.bind(on_press=self.click_price_range_two)
+
+        self.add_widget(self.two)
+
+
+
+        self.three = Button(
+            text='$$$',
+            size_hint=(0.1, 0.1),
+            background_color=(1, 1, 1, 1),
+            background_normal='',
+            color=(0, 0, 0, 1),
+            font_size='18sp',
+            bold=True,
+            pos_hint={"center_x":0.55, "center_y": 0.4}
+
+        )
+        self.three.bind(on_press=self.click_price_range_three)
+
+        self.add_widget(self.three)
+
+
+
+        self.clearPrice = Button(
+            text='clear price',
+            size_hint=(0.1, 0.1),
+            background_color=(1, 1, 1, 1),
+            background_normal='',
+            color=(0, 0, 0, 1),
+            font_size='12sp',
+            bold=True,
+            pos_hint={"center_x":0.70, "center_y": 0.4}
+
+        )
+        self.clearPrice.bind(on_press=self.click_price_range_clear)
+
+        self.add_widget(self.clearPrice)
 
 
 
@@ -320,6 +386,24 @@ class YesNoPage(Screen):
         self.no_delivery.background_color=(1, 0, 0, 1)
         self.yes_delivery.background_color=(0, 0.5, 0, 1)
         set_truth_value(False)
+
+    def click_price_range_one(self, instance):
+        self.one.background_color=(0, 1, 0, 1)
+        set_price_range('$')
+
+    def click_price_range_two(self, instance):
+        self.two.background_color=(0, 1, 0, 1)
+        set_price_range('$$')
+
+    def click_price_range_three(self, instance):
+        self.three.background_color=(0, 1, 0, 1)
+        set_price_range('$$$')
+
+    def click_price_range_clear(self, instance):
+        self.one.background_color=(1, 1, 1, 1)
+        self.two.background_color=(1, 1, 1, 1)
+        self.three.background_color=(1, 1, 1, 1)
+        set_price_range('empty')
 
     def show_results_screen(self):
         self.manager.current = 'results'

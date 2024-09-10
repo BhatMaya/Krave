@@ -34,8 +34,6 @@ def process_temp_list(temp_list, distance):
     latitude = 47.60456 #47.656610017739375 
     longitude = -122.03368#-122.31540319155656 
     meters = round(1609.344*distance)
-    print("distance before round", distance)
-    print("distance being passed", meters)
 
 
     params = {

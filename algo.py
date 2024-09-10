@@ -1,6 +1,6 @@
 from stats import standardizationProcess, standardDeviation
 
-def rank_restaurants(price_range, needs_delivery, restaurant_options, additional_pos_search_terms, additional_neg_search_terms):
+def rank_restaurants(price_range, needs_delivery, restaurant_options, additional_pos_search_terms, additional_neg_search_terms, distance):
     restaurant_options = standardizationProcess(restaurant_options)
     max_price = price_range[-1]
     final_restaurant_list = {}
@@ -31,6 +31,12 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
             # may remove, but for now if rating is 1 star eliminate it 
             if key.rating == 1: 
                 replaceVal == 0
+
+            # distance deductions:
+            if key.distance > distance:
+                replaceVal -= 0.3
+            if (key.distance - distance) > (0.2 * distance):
+                replaceVal -= 0.3
 
             # negative search terms filtering
             for cuisine, related_terms in additional_neg_search_terms.items():
