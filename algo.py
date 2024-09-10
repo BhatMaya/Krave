@@ -22,11 +22,11 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
             # rating deductions 
             if key.rating < 4.5: 
                 replaceVal = replaceVal - 0.025
-            if key.rating < 4:
+            if key.rating < 4 and key.price != '$':
                 replaceVal = replaceVal - 0.05
-            if key.rating < 3.5:
+            if key.rating < 3.5 and key.price != '$':
                 replaceVal = replaceVal - 0.15
-            if key.rating < 3:
+            if key.rating < 3 and key.price != '$':
                 replaceVal = replaceVal - 0.3
             # may remove, but for now if rating is 1 star eliminate it 
             if key.rating == 1: 
