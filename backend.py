@@ -34,6 +34,8 @@ def set_truth_value(delivery_choice):
     print(needDelivery)
 
 def set_distance(distance_choice): 
+    global distance 
+    
     distance = distance_choice
     print(distance)
 
@@ -87,7 +89,9 @@ def generate_sorted_restaurants():
 
 	
     global final_map	
+    global distance
 
+    print("distance before passing to main", distance)
     restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms = process_temp_list(final_map, distance)
 
     sorted_tags = rank_restaurants(priceRange, needDelivery, restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms)
