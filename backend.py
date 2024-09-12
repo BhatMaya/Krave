@@ -48,6 +48,13 @@ def set_price_range(price_choice):
         priceRange = []
     print(priceRange)
 
+def remove_price_range(price_choice): 
+    global priceRange
+    if(price_choice in priceRange): 
+        priceRange.remove(price_choice)
+    print(priceRange)
+
+
 
 
 

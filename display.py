@@ -10,7 +10,7 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range
+from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range, remove_price_range
 from main import Restaurant, process_temp_list
 from algo import rank_restaurants
 
@@ -245,7 +245,7 @@ class YesNoPage(Screen):
         button_layout.add_widget(self.no_delivery)
         self.no_delivery.bind(on_press=self.click_no_button)
 
-
+       
         self.one = Button(
             text='$',
             size_hint=(0.1, 0.1),
@@ -257,11 +257,12 @@ class YesNoPage(Screen):
             pos_hint={"center_x":0.25, "center_y": 0.4}
 
         )
+        self.one.click_state = False
         self.one.bind(on_press=self.click_price_range_one)
 
         self.add_widget(self.one)
 
-
+        
         self.two = Button(
             text='$$',
             size_hint=(0.1, 0.1),
@@ -273,12 +274,13 @@ class YesNoPage(Screen):
             pos_hint={"center_x":0.4, "center_y": 0.4}
 
         )
+        self.two.click_state = False
         self.two.bind(on_press=self.click_price_range_two)
 
         self.add_widget(self.two)
 
 
-
+        
         self.three = Button(
             text='$$$',
             size_hint=(0.1, 0.1),
@@ -290,26 +292,27 @@ class YesNoPage(Screen):
             pos_hint={"center_x":0.55, "center_y": 0.4}
 
         )
+        self.three.click_state = False
         self.three.bind(on_press=self.click_price_range_three)
 
         self.add_widget(self.three)
 
 
+     
+        # self.clearPrice = Button(
+        #     text='clear price',
+        #     size_hint=(0.1, 0.1),
+        #     background_color=(1, 1, 1, 1),
+        #     background_normal='',
+        #     color=(0, 0, 0, 1),
+        #     font_size='12sp',
+        #     bold=True,
+        #     pos_hint={"center_x":0.70, "center_y": 0.4}
 
-        self.clearPrice = Button(
-            text='clear price',
-            size_hint=(0.1, 0.1),
-            background_color=(1, 1, 1, 1),
-            background_normal='',
-            color=(0, 0, 0, 1),
-            font_size='12sp',
-            bold=True,
-            pos_hint={"center_x":0.70, "center_y": 0.4}
+        # )
+        # # self.clearPrice.bind(on_press=self.click_price_range_clear)
 
-        )
-        self.clearPrice.bind(on_press=self.click_price_range_clear)
-
-        self.add_widget(self.clearPrice)
+        # self.add_widget(self.clearPrice)
 
 
 
@@ -388,22 +391,42 @@ class YesNoPage(Screen):
         set_truth_value(False)
 
     def click_price_range_one(self, instance):
-        self.one.background_color=(0, 1, 0, 1)
-        set_price_range('$')
+        if self.one.click_state: 
+            self.one.background_color=(1, 1, 1, 1)
+            remove_price_range('$')
+            self.one.click_state = False
+        else: 
+            self.one.background_color=(0, 1, 0, 1)
+            set_price_range('$')
+            self.one.click_state = True
 
     def click_price_range_two(self, instance):
-        self.two.background_color=(0, 1, 0, 1)
-        set_price_range('$$')
+        if self.two.click_state: 
+            self.two.click_state = False
+            self.two.background_color=(1, 1, 1, 1)
+            remove_price_range('$$')
+            print(self.two.click_state)
+        else: 
+            self.two.click_state = True
+            self.two.background_color=(0, 1, 0, 1)
+            set_price_range('$$')
+            print(self.two.click_state)
 
     def click_price_range_three(self, instance):
-        self.three.background_color=(0, 1, 0, 1)
-        set_price_range('$$$')
+        if self.three.click_state: 
+            self.three.background_color=(1, 1, 1, 1)
+            remove_price_range('$$$')
+            self.three.click_state = False
+        else: 
+            self.three.background_color=(0, 1, 0, 1)
+            set_price_range('$$$')
+            self.three.click_state = True
 
-    def click_price_range_clear(self, instance):
-        self.one.background_color=(1, 1, 1, 1)
-        self.two.background_color=(1, 1, 1, 1)
-        self.three.background_color=(1, 1, 1, 1)
-        set_price_range('empty')
+    # def click_price_range_clear(self, instance):
+    #     self.one.background_color=(1, 1, 1, 1)
+    #     self.two.background_color=(1, 1, 1, 1)
+    #     self.three.background_color=(1, 1, 1, 1)
+    #     set_price_range('empty')
 
     def show_results_screen(self):
         self.manager.current = 'results'
