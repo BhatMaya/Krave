@@ -51,7 +51,7 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
                         replaceVal += 0.2 * (10 - replaceVal)
 
             replaceVal = replaceVal - stdAdjustment
-        final_restaurant_list[key] = round(replaceVal * 10, 3)
+        final_restaurant_list[key] = round(replaceVal * 10, 2)
 
     sorted_final_restaurant_list = {k: v for k, v in sorted(final_restaurant_list.items(), key=lambda item: item[1], reverse=True)}
     print(sorted_final_restaurant_list)
