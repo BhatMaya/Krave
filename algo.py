@@ -16,9 +16,9 @@ def rank_restaurants(price_range, needs_delivery, restaurant_options, additional
         else:
             # price deductions 
             if key.price not in price_range:
-                replaceVal = value - 0.2
+                replaceVal = value - 0.35
                 if max_price + '$' != key.price:
-                    replaceVal = replaceVal - 0.7 # maybe 0.6 we'll see
+                    replaceVal = replaceVal - 0.7 
             # rating deductions 
             if key.rating < 4.5: 
                 replaceVal = replaceVal - 0.025

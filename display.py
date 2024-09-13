@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range, remove_price_range
-from main import Restaurant, process_temp_list
+from main import Restaurant, process_temp_list, get_details
 from algo import rank_restaurants
 
 
@@ -20,8 +20,7 @@ from algo import rank_restaurants
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        # u.user_prefs = UserPreferences()
-
+        
         self.pictures = [
             Picture("tacos.png", ["tacos", "mexican", "latin"]),
             Picture("pizza.png", ["pizza", "italian"]),
@@ -112,9 +111,6 @@ class MainScreen(Screen):
             generate_related_terms_map()
             self.show_yes_no_page()
 
-    # def show_results_screen(self):
-    #     self.manager.current = 'results'
-    #     self.manager.get_screen('results').display_results()
     def show_yes_no_page(self): 
         self.manager.current = 'yesno'
         self.manager.get_screen('yesno').display_page()
@@ -173,16 +169,21 @@ class ResultsScreen(Screen):
             )
             rating = restaurant.rating
             distance = restaurant.distance
-            label.bind(on_press=lambda btn, r=restaurant, d=distance, s=score: self.show_popup(r.name, r.rating, d, s))
+            cuisines, attributes = get_details(restaurant.name, restaurant.address)
+            label.bind(on_press=lambda btn, r=restaurant, d=distance, s=score: self.show_popup(r.name, r.rating, d, s, r.price, r.address, cuisines))
             podium_layout.add_widget(label)
 
         self.layout.add_widget(podium_layout)
 
-    def show_popup(self, text, rating, distance, score):
+    def show_popup(self, text, rating, distance, score, price, address, cuisines):
         tag = text  # Extract tag from button text
         content = FloatLayout()
         content.add_widget(Label(text=f"Distance: {round(distance/1609.34, 2)} mi", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.7}))
         content.add_widget(Label(text=f"Rating: {rating}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.6}))
+        content.add_widget(Label(text=f"Price: {price}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.5}))
+
+    
+        content.add_widget(Label(text=f"Cuisines: {cuisines}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.2, "center_y": 0.8}))
 
         popup = Popup(
             title=f"{tag}",
@@ -298,23 +299,6 @@ class YesNoPage(Screen):
         self.add_widget(self.three)
 
 
-     
-        # self.clearPrice = Button(
-        #     text='clear price',
-        #     size_hint=(0.1, 0.1),
-        #     background_color=(1, 1, 1, 1),
-        #     background_normal='',
-        #     color=(0, 0, 0, 1),
-        #     font_size='12sp',
-        #     bold=True,
-        #     pos_hint={"center_x":0.70, "center_y": 0.4}
-
-        # )
-        # # self.clearPrice.bind(on_press=self.click_price_range_clear)
-
-        # self.add_widget(self.clearPrice)
-
-
 
         self.layout.add_widget(button_layout)
 
@@ -421,12 +405,6 @@ class YesNoPage(Screen):
             self.three.background_color=(0, 1, 0, 1)
             set_price_range('$$$')
             self.three.click_state = True
-
-    # def click_price_range_clear(self, instance):
-    #     self.one.background_color=(1, 1, 1, 1)
-    #     self.two.background_color=(1, 1, 1, 1)
-    #     self.three.background_color=(1, 1, 1, 1)
-    #     set_price_range('empty')
 
     def show_results_screen(self):
         self.manager.current = 'results'

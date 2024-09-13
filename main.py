@@ -11,6 +11,7 @@ class Restaurant:
         self.is_closed = is_closed
         self.distance = distance
         self.delivers = delivers
+        self.cuisines = []
 
 
     def __repr__(self):
@@ -90,5 +91,74 @@ def process_temp_list(temp_list, distance):
     return restaurant_options, additionalPosSearchTerms, additionalNegSearchTerms
 
 
+
+
+def get_details(name, address):
+
+    api_url = 'https://api.yelp.com/v3/businesses/search'
+    api_key = 'mx5lelJJcAekm2elNILMonEbvbMAUeQCrltMXawwfpzM3g-ygJ9kUy0atWWlEFh8ll2MCTXj7DAtAMP72Zkx4-0i1vD2Vy-y93AEQ1LwRdcqd1b-Hk82LlubQYzkZnYx'
+    HEADERS = {'Authorization': f'Bearer {api_key}'}
+
+    rstr_name = name
+    location = address
+
+
+    attributes = []
+    cuisine = []
+
+    params = {
+        'term': rstr_name,  
+        'location': address
+    }
+
+    
+    response = requests.get(api_url, headers=HEADERS, params=params)
+    search_results = response.json()
+
+    
+    if search_results['businesses']:
+        restaurant_id = search_results['businesses'][0]['id']  # Get the business ID of the first result
+        details_url = f'https://api.yelp.com/v3/businesses/{restaurant_id}'
+
+        # Step 2: Get detailed business info
+        response = requests.get(details_url, headers=HEADERS)
+        restaurant_details = response.json()
+
+        # Step 3: Populate cuisine array
+        cuisine = [category['title'] for category in restaurant_details.get('categories', [])]
+
+        # Step 4: Populate attributes array (you can add more attributes here as needed)
+        attributes = []
+
+        # Example: Check if restaurant is good for kids
+        if restaurant_details.get('attributes', {}).get('GoodForKids', None):
+            attributes.append('Good for Kids')
+
+        # Example: Check if restaurant has vegetarian-friendly options (infer from categories)
+        if any('Vegetarian' in category['title'] for category in restaurant_details.get('categories', [])):
+            attributes.append('Vegetarian Friendly')
+
+        # Example: Check if restaurant has WiFi
+        if restaurant_details.get('attributes', {}).get('WiFi', None):
+            attributes.append('WiFi Available')
+
+        # You can add more attribute checks based on your needs
+        # Step 5: Print the populated lists
+        print(f'Cuisine: {cuisine}')
+        print(f'Attributes: {attributes}')
+    else:
+        print('No restaurant found with the given name and address.')
+
+    return cuisine, attributes
+
+
+    
+
+
+
+        
+
+    
+        
 
 

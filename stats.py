@@ -101,34 +101,10 @@ def getSubtractionVal(lowerQ, higherQ):
         return subVal
     else:
         return -1  
-        #this is meant to be taken as an error code cause the higher quartile should never be 0 (i think). 
+        #this is an error code cause the higher quartile should never be 0.  
 
 
 
-
-
-
-
-
-
-##Unit Testing 
-r0 = Restaurant("r0", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r1 = Restaurant("r1", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r2 = Restaurant("r2", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r3 = Restaurant("r3", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r4 = Restaurant("r4", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r5 = Restaurant("r5", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r6 = Restaurant("r6", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-r7 = Restaurant("r7", "address", "price", 0.5, "latitude", "longitude", "isclosed", "distance", "delivers")
-testRestaurants = {}
-testRestaurants[r0] = 1
-testRestaurants[r1] = 1
-testRestaurants[r2] = 1
-testRestaurants[r3] = 1
-testRestaurants[r4] = 3
-testRestaurants[r5] = 3
-testRestaurants[r6] = 3
-testRestaurants[r7] = 3
 
 
 def standardizationProcess(restaurant_options):
@@ -142,3 +118,5 @@ def standardizationProcess(restaurant_options):
 def standardDeviation(restaurant_options):
     data = prepForStats(restaurant_options)
     return statistics.stdev(data)
+
+
