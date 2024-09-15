@@ -178,10 +178,10 @@ class ResultsScreen(Screen):
     def show_popup(self, text, rating, distance, score, price, address, cuisines):
         tag = text  # Extract tag from button text
         content = FloatLayout()
-        content.add_widget(Label(text=f"Cuisines: {cuisines}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.4, "center_y": 0.8}))
-        content.add_widget(Label(text=f"Distance: {round(distance/1609.34, 2)} mi", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.4, "center_y": 0.7}))
-        content.add_widget(Label(text=f"Rating: {rating}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.4, "center_y": 0.6}))
-        content.add_widget(Label(text=f"Price: {price}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.4, "center_y": 0.5}))
+        content.add_widget(Label(text=f"Cuisines: {cuisines}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.8}))
+        content.add_widget(Label(text=f"Distance: {round(distance/1609.34, 2)} mi", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.7}))
+        content.add_widget(Label(text=f"Rating: {rating}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.6}))
+        content.add_widget(Label(text=f"Price: {price}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.5}))
 
     
         
@@ -189,7 +189,7 @@ class ResultsScreen(Screen):
         popup = Popup(
             title=f"{tag}",
             content=content,
-            size_hint=(0.8, 0.8),
+            size_hint=(0.6, 0.6),
             background_color=(0.5, 0.5, 0.5, 1)  # Gray background
         )
         popup.open()
