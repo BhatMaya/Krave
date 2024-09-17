@@ -176,6 +176,7 @@ class ResultsScreen(Screen):
         self.layout.add_widget(podium_layout)
 
     def show_popup(self, text, rating, distance, score, price, address, cuisines):
+        cuisines, attributes = get_details(text, address)
         tag = text  # Extract tag from button text
         content = FloatLayout()
         content.add_widget(Label(text=f"Cuisines: {cuisines}", size_hint=(0.8, 0.8), pos_hint={"center_x": 0.5, "center_y": 0.8}))
