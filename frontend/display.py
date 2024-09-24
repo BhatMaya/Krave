@@ -1,3 +1,10 @@
+import sys
+import os
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 from kivy.app import App
 from kivy.uix.image import Image
 from kivy.uix.button import Button
@@ -10,9 +17,9 @@ from kivy.animation import Animation
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range, remove_price_range
-from main import Restaurant, process_temp_list, get_details
-from algo import rank_restaurants
+from backend.backend import Picture,  needDelivery, priceRange, generate_sorted_restaurants, generate_related_terms_map, like_picture, dislike_picture, set_truth_value, set_distance, set_price_range, remove_price_range
+from backend.main import Restaurant, process_temp_list, get_details
+from backend.algo import rank_restaurants
 
 
 

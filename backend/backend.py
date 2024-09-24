@@ -1,5 +1,5 @@
-from main import Restaurant, process_temp_list
-from algo import rank_restaurants
+from .main import Restaurant, process_temp_list
+from .algo import rank_restaurants
 
 # global variables (nD and pR will later be determined by user input)
 needDelivery = False

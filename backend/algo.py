@@ -1,4 +1,4 @@
-from stats import standardizationProcess, standardDeviation
+from .stats import standardizationProcess, standardDeviation
 
 def rank_restaurants(price_range, needs_delivery, restaurant_options, additional_pos_search_terms, additional_neg_search_terms, distance):
     restaurant_options = standardizationProcess(restaurant_options)
