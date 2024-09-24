@@ -22,22 +22,22 @@ class MainScreen(Screen):
         super(MainScreen, self).__init__(**kwargs)
         
         self.pictures = [
-            Picture("tacos.png", ["tacos", "mexican", "latin"]),
-            Picture("pizza.png", ["pizza", "italian"]),
-            Picture("burger.png", ["burger"]),
-            Picture("chinese.png", ["chinese", "rice"]),
-            Picture("burger2.png", ["burger"]),
-            Picture("sandwich.png", ["sandwich", "healthy"]),
-            Picture("salad.png", ['salad', 'healthy']),
-            Picture("thai.png", ["thai", "curry", "rice"]),
-            Picture("breakfast .png", ["breakfast"]),
-            Picture("fries .png", ["fries", "burger"]),
-            Picture("indian curry rice .png", ["indian", "curry"]),
-            Picture("indian curry rice 2.png", ["indian", "curry"]),
-            Picture("korean .png", ["korean"]),
-            Picture("italian restaurant .png", ["italian", "pasta"]),
-            Picture("noodles thai .png", ["noodles", "thai"]),
-            Picture("mexican chipotle byo .png", ["mexican", "chipotle"]),
+            Picture("photos/tacos.png", ["tacos", "mexican", "latin"]),
+            Picture("photos/pizza.png", ["pizza", "italian"]),
+            Picture("photos/burger.png", ["burger"]),
+            Picture("photos/chinese.png", ["chinese", "rice"]),
+            Picture("photos/burger2.png", ["burger"]),
+            Picture("photos/sandwich.png", ["sandwich", "healthy"]),
+            Picture("photos/salad.png", ['salad', 'healthy']),
+            Picture("photos/thai.png", ["thai", "curry", "rice"]),
+            Picture("photos/breakfast .png", ["breakfast"]),
+            Picture("photos/fries .png", ["fries", "burger"]),
+            Picture("photos/indian curry rice .png", ["indian", "curry"]),
+            Picture("photos/indian curry rice 2.png", ["indian", "curry"]),
+            Picture("photos/korean .png", ["korean"]),
+            Picture("photos/italian restaurant .png", ["italian", "pasta"]),
+            Picture("photos/noodles thai .png", ["noodles", "thai"]),
+            Picture("photos/mexican chipotle byo .png", ["mexican", "chipotle"]),
         ]
 
         self.current_picture_index = 0
